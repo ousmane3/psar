@@ -1,0 +1,415 @@
+options
+{
+  static = false;
+  LOOKAHEAD=2; 
+}
+
+PARSER_BEGIN(GenerateurAnalyseur)
+package cAnalyseur;
+public class GenerateurAnalyseur
+{
+ protected SimpleNode root;
+
+ /*
+ * effectue l analyse syntaxique de la chaine donnée en paramètre
+ *
+ * @param la chaine représentant la formule à analyser
+ *
+ * @return deux elements:true ou false selon que le resultat de l analyse
+ * et la chaine correspondante à la formule en python.
+ */
+
+  protected Object[] check(String pourAnalyser)throws ParseException
+  {
+    GenerateurAnalyseur parser = new GenerateurAnalyseur(new java.io.StringReader(pourAnalyser));
+ 	Object[] obj ={false,""};
+ 	root = null;
+    try
+      {
+       // premiere alternative d'analyse
+         root = parser.alternative1();
+        	obj[0] = true;        	
+        	return obj;			
+      }
+      catch (Exception e)
+      {
+
+		try
+		{
+		  /*l alternative 1 n a pas abouti,la chaine etant consommée (peut etre amelioré!)*/ 
+		  parser = new GenerateurAnalyseur(new java.io.StringReader(pourAnalyser));
+		  root = parser.alternative2();		        	
+          obj[0] = true;
+          return obj;
+		}
+		catch(Exception f)
+		{
+		  		
+        		obj[1] = e.getMessage()+"\t"+f.getMessage();
+        		return obj;
+		  
+		}
+		catch(Error f)
+		{
+		  		obj[0] = false;
+        		obj[1] = f.getMessage();
+        		return obj;
+		}
+    }
+       catch (Error e)
+      {
+		  		obj[0] = false;
+        		obj[1] = "Error";
+        		return obj;       
+      }
+
+}
+ }
+PARSER_END(GenerateurAnalyseur)
+
+
+SKIP :
+{
+  " "
+| "\r"
+| "\t"
+| "\n"
+}
+
+/*constantes*/
+TOKEN :
+{
+  <CONSTANTE : ["a"-"t"] >
+}
+/*variables*/
+TOKEN :
+{
+  <VARIABLE : ["w"-"z"] >
+}
+
+void constante():
+{
+  Token t;
+}
+{
+  t = <CONSTANTE> {jjtThis.value = t.image;}
+}
+
+
+void variable():
+{
+  Token t;
+}
+{
+  t = <VARIABLE> {jjtThis.value = t.image;}
+}
+
+/*termes*/
+void term()#void:
+{}
+{
+  
+  constante()|variable()
+}
+
+SimpleNode alternative1():
+{}
+{
+	formule() <EOF>{return jjtThis;}	
+}
+
+SimpleNode alternative2():
+{}
+{
+	formule_() <EOF>{return jjtThis;}
+	
+}
+
+/*prédicats de couleur*/
+void est_rose() #EST_ROSE :
+{}
+{
+	"est_rose("term()")"
+}
+void est_blanche() #EST_BLANCHE :
+{}
+{
+	"est_blanc("term()")"
+}
+
+void est_rouge() #EST_ROUGE :
+{}
+{
+	"est_rouge("term()")"
+}
+/*prédicats de comparaison de couleur binaire*/
+void mm_col() #MM_COL_QUE :
+{}
+{
+  "meme_couleur_que("term()","term()")"
+}
+/*prédicats d'espèce*/
+void paquerette() #PAQUERETTE :
+{}
+{
+  "Paquerette("term()")"
+}
+
+void tulipe() #TULIPE :
+{}
+{
+  "Tulipe("term()")"
+}
+
+void rose() #ROSE :
+{}
+{
+  "Rose("term()")"
+}
+
+/*prédicats de position unaire*/
+void at_est() #AT_EST :
+{}
+{
+  "a_l_est("term()")"
+}
+void at_ouest() #AT_OUEST :
+{}
+{
+  "a_l_ouest("term()")"
+}
+void at_nord() #AT_NORD :
+{}
+{
+  "au_nord("term()")"
+}
+void at_sud() #AT_SUD :
+{}
+{
+  "au_sud("term()")"
+}
+/*prédicats de comparaison de  position binaire*/
+void est_de() #AT_EST_DE :
+{}
+{
+  "a_l_est_de("term()","term()")"
+}
+void ouest_de() #AT_OUEST_DE :
+{}
+{
+  "a_l_ouest_de("term()","term()")"
+}
+void nord_de() #AT_NORD_DE :
+{}
+{
+  "au_nord_de("term()","term()")"
+}
+void sud_de() #AT_SUD_DE :
+{}
+{
+  "au_sud_de("term()","term()")"
+}
+void mm_latitude() #MM_LATITUDE :
+{}
+{
+  "meme_latitude("term()","term()")"
+}
+void mm_longitude() #MM_LONGITUDE :
+{}
+{
+  "meme_longitude("term()","term()")"
+}
+/*prédicats de comparaison de position ternaire*/
+void est_entre() #EST_ENTRE :
+{}
+{
+  "est_entre("term()","term()","term()")"
+}
+/*prédicats de taille*/
+void est_petit() #EST_PETIT :
+{}
+{
+  "est_petit("term()")"
+}
+void est_grand()#EST_GRAND :
+{}
+{
+  "est_grand("term()")"
+}
+void est_moyen()#EST_MOYEN :
+{}
+{
+  "est_moyen("term()")"
+}
+/*prédicats de comparaison de taille */
+void plus_petit() #PLUS_PETIT_QUE :
+{}
+{
+  "plus_petit_que("term()","term()")"
+}
+void plus_grand() #PLUS_GRAND_QUE :
+{}
+{
+  "plus_grand_que("term()","term()")"
+}
+
+void mm_taille() #MM_TAILLE :
+{}
+{
+  "meme_taille_que("term()","term()")"
+}
+/*prédicats d'égalité*/
+void est_egal() #EST_EGAL :
+{}
+{
+
+  (term())"="(term())
+}
+
+/*predicat*/
+
+
+void predicat()#void:
+{}
+{
+  est_rose()
+| est_rouge()
+| est_blanche()
+| mm_col()
+| paquerette()
+| tulipe()
+| rose()
+| at_est()
+| at_ouest()
+| at_nord()
+| at_sud()
+| est_de()
+| ouest_de()
+| nord_de()
+| sud_de()
+| mm_latitude()
+| mm_longitude()
+| est_entre()
+| est_grand()
+| est_petit()
+| est_moyen()
+| plus_petit()
+| plus_grand()
+| mm_taille()
+| est_egal()
+}
+
+
+
+
+/**********************Regle 1*************************/
+
+void formule() #UNARY:
+{}
+{
+(
+   Unary()
+  [
+   operateur()
+   Unary()
+  ]
+
+)
+}
+
+void Unary()#UNARY:
+{}
+{
+ (not())*
+ (predicat()
+ |quantificateur()
+ 				(predicat()
+ 				|"("formule()")")
+ |"("formule()")")
+}
+
+
+
+
+
+/* OPERATORS */
+
+/**/
+void or() #OR :
+{}
+{"V"}
+void and() #AND :
+{}
+{ "^"}
+void not() #NOT :
+{}
+{"!"}
+
+void implies() #IMPLIES :
+{}
+{ "=>"}
+
+void bimplies() #BIMPLIES :
+{}
+{"<=>"}
+
+
+void operateur()#void:
+{}
+{
+ and()
+| not()
+| implies()
+| bimplies()
+|or()
+}
+
+
+void quantificateur()#void:
+{}
+{
+	forall()[quantificateur()]
+|  exists() [quantificateur()]
+}
+
+void forall()#FORALL :
+{}
+{
+  "U"variable()
+}
+
+void exists()#EXISTS :
+{}
+{
+  "E"variable()
+}
+// ajouter 28 mars 2016
+void use_op() #OPERATEUR:
+{}
+{
+  Unary()operateur()Unary()
+}
+//
+
+
+/******** regle 2*********/
+
+
+void formule_()#UNARY:
+{}
+{
+  quantificateur()("("formule_()")")
+|	Unary_()
+}
+
+void Unary_()#UNARY:
+{}
+{
+  predicat_()(operateur()predicat_())+
+}
+void predicat_()#void:
+{}
+{
+  (not())*predicat()
+}
+
