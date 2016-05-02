@@ -1,0 +1,496 @@
+options
+{
+  static = false;
+  LOOKAHEAD=2;
+}
+PARSER_BEGIN(GenerateurAnalyseur)
+package cAnalyseur;
+/*
+classe ecrit javaCC et generée automatiquement
+la grammaire y est decodé et transformée.
+*/
+public class GenerateurAnalyseur
+{
+ protected SimpleNode root;
+ /*
+ * effectue l analyse syntaxique de la chaine donnée en paramètre
+ *
+ * @param la chaine représentant la formule à analyser
+ *
+ * @return deux elements:true ou false selon que le resultat de l analyse
+ * et la chaine correspondante à la formule en python.
+ */
+
+  protected Object[] check(String pourAnalyser)throws ParseException
+  {
+    GenerateurAnalyseur parser = new GenerateurAnalyseur(new java.io.StringReader(pourAnalyser));
+ 	Object[] obj ={false,""};
+ 	root = null;
+    try
+      {
+       // premiere alternative d'analyse
+         root = parser.alternative1();
+        	obj[0] = true;        	
+        	return obj;			
+      }
+      catch (Exception e)
+      {
+
+		try
+		{
+		  /*l alternative 1 n a pas abouti,la chaine etant consommée (peut etre amelioré!)*/ 
+		  parser = new GenerateurAnalyseur(new java.io.StringReader(pourAnalyser));
+		  root = parser.alternative2();		        	
+          obj[0] = true;
+          return obj;
+		}
+		catch(Exception f)
+		{
+		  		
+        		obj[1] = e.getMessage()+"\t"+f.getMessage();
+        		return obj;
+		  
+		}
+		catch(Error f)
+		{
+		  		obj[0] = false;
+        		obj[1] = f.getMessage();
+        		return obj;
+		}
+    }
+       catch (Error e)
+      {
+		  		obj[0] = false;
+        		obj[1] = "Error";
+        		return obj;       
+      }
+
+}
+ }
+PARSER_END(GenerateurAnalyseur)
+
+
+SKIP :
+{
+  " "
+| "\r"
+| "\t"
+| "\n"
+}
+
+/*constantes*/
+TOKEN :
+{
+  <CONSTANTE : ["a"-"t"] > 
+}
+/*variables*/
+TOKEN :
+{
+  <VARIABLE : ["w"-"z"] >
+}
+
+void constante():
+{
+  Token a;String s;
+}
+{
+ 
+  a = <CONSTANTE> {s=a.image;jjtThis.value = s;}
+}
+
+void variable():
+{
+  Token b;String s;
+}
+{
+ 
+  b = <VARIABLE>
+
+   {s=b.image;jjtThis.value = s;} 
+}
+
+/*termes*/
+void term()#void:
+{}
+{
+  
+constante()| variable() 
+}
+
+SimpleNode alternative1():
+{}
+{
+	formule() <EOF>{return jjtThis;}	
+}
+
+SimpleNode alternative2():
+{}
+{
+	formule_() <EOF>{return jjtThis;}
+	
+}
+
+/*prédicats de couleur*/
+
+
+
+void est_rose() #rs :
+{}
+{
+	"est_rose("term()")"
+}
+void est_blanche() #bl:
+{}
+{
+	"est_blanc("term()")"
+}
+
+void est_rouge() #rg :
+{}
+{
+	"est_rouge("term()")"
+}
+/*prédicats de comparaison de couleur binaire*/
+void mm_col() #mc :
+{}
+{
+ 	_col() "("term()","term()")"
+}
+void _col()#void: //afin d eviter l'écrasement de la pile 
+{}
+{
+  "meme_couleur_que"}
+/*prédicats d'espèce*/
+void paquerette() #pa:
+{}
+{
+  "Paquerette("term()")"
+}
+
+void tulipe() #tu :
+{}
+{
+  "Tulipe("term()")"
+}
+
+void rose() #ro :
+{}
+{
+  "Rose("term()")"
+}
+
+/*prédicats de position unaire*/
+void at_est() #ae :
+{}
+{
+  "a_l_est("term()")"
+}
+void at_ouest() #ao :
+{}
+{
+  "a_l_ouest("term()")"
+}
+void at_nord() #an :
+{}
+{
+  "au_nord("term()")"
+}
+void at_sud() #as :
+{}
+{
+  "au_sud("term()")"
+}
+/*prédicats de comparaison de  position binaire*/
+void est_de() #ed :
+{}
+{
+  _est_de()"("term()","term()")"
+}
+void _est_de()#void:
+{}
+{
+  "a_l_est_de"}
+
+void ouest_de() #od :
+{}
+{
+   _ouest_de()"("term()","term()")"
+}
+void _ouest_de()#void:
+{}
+{
+  "a_l_ouest_de"}
+
+void nord_de() #nd :
+{}
+{
+  _nord_de()"("term()","term()")"
+}
+void _nord_de()#void:
+{
+}
+{
+  "au_nord_de"
+}
+void sud_de() #sd :
+{}
+{
+  _sud_de()"("term()","term()")"
+}
+
+void _sud_de() #void :
+{}
+{
+  "au_sud_de"
+}
+
+void mm_latitude() #ma :
+{}
+{
+  _mm_latitude()"("term()","term()")"
+}
+
+void _mm_latitude() #void :
+{}
+{
+  "meme_latitude"
+}
+
+void mm_longitude() #mo :
+{}
+{
+  _mm_longitude()"("term()","term()")"
+}
+void _mm_longitude() #void :
+{}
+{
+  "meme_longitude"
+}
+
+/*prédicats de comparaison de position ternaire*/
+void est_entre() #en :
+{}
+{
+  _est_entre()"("term()","term()","term()")"
+}
+
+void _est_entre() #void :
+{}
+{
+  "est_entre"
+}
+
+/*prédicats de taille*/
+void est_petit() #ep :
+{}
+{
+  "est_petit("term()")"
+}
+void est_grand()#eg :
+{}
+{
+  "est_grand("term()")"
+}
+void est_moyen()#em :
+{}
+{
+  "est_moyen("term()")"
+}
+/*prédicats de comparaison de taille */
+void plus_petit() #pp :
+{}
+{
+  _plus_petit()"("term()","term()")"
+}
+
+void _plus_petit() #void :
+{}
+{
+  "plus_petit_que"
+}
+void plus_grand() #pg :
+{}
+{
+  _plus_grand()"("term()","term()")"
+}
+
+void _plus_grand() #void :
+{}
+{
+  "plus_grand_que"
+}
+
+
+void mm_taille() #mt :
+{}
+{
+  _mm_taille()"("term()","term()")"
+}
+
+void _mm_taille() #void :
+{}
+{
+  "meme_taille_que"
+}
+/*prédicats d'égalité*/
+void est_egal() #eq :
+{}
+{
+
+  term() _est_egal() term()
+}
+
+void _est_egal() #void :
+{}
+{
+
+ "="
+}
+
+/*predicat*/
+
+
+void predicat()#void:
+{}
+{
+  est_rose()
+| est_rouge()
+| est_blanche()
+| mm_col()
+| paquerette()
+| tulipe()
+| rose()
+| at_est()
+| at_ouest()
+| at_nord()
+| at_sud()
+| est_de()
+| ouest_de()
+| nord_de()
+| sud_de()
+| mm_latitude()
+| mm_longitude()
+| est_entre()
+| est_grand()
+| est_petit()
+| est_moyen()
+| plus_petit()
+| plus_grand()
+| mm_taille()
+| est_egal()
+
+}
+
+
+
+
+/**********************Regle 1*************************/
+
+void formule() #FORMULE:
+{}
+{
+(
+   Unary()
+  [
+   operateur()
+   Unary()
+  ]
+
+)
+}
+
+void Unary()#UNARY:
+{}
+{
+ [not()] (predicat()|"("formule()")")
+ |quantificateur()
+ 				(predicat()
+ 				|"("formule()")")
+ 
+}
+
+
+
+
+
+/* OPERATORS */
+
+/**/
+void or() #or :
+{}
+{"V"}
+void and() #ad :
+{}
+{ "∧"}
+void not() #no :
+{}
+{"¬"}
+
+void implies() #ip :
+{}
+{ "⇒"}
+
+void bimplies() #bp :
+{}
+{"<=>"}
+
+
+void operateur()#UNARY:
+{}
+{
+ and()
+| not()
+| implies()
+| bimplies()
+|or()
+}
+
+
+void quantificateur()#quantificateur:
+{}
+{
+  [not()](forall()[quantificateur()] | exists() [quantificateur()])
+}
+
+void forall()#fl :
+{}
+{
+  "∀"variable()
+}
+
+void exists()#ex :
+{}
+{
+  "∃"variable()
+}
+// ajouter 28 mars 2016
+void use_op() #OPERATEUR:
+{}
+{
+  Unary()operateur()Unary()
+}
+//
+
+
+/******** regle 2*********/
+
+
+void formule_()#UNARY:
+{}
+{
+  quantificateur()("("formule_()")")
+|	Unary_()
+}
+
+void Unary_()#UNARY:
+{}
+{
+  predicat_()(operateur()predicat_())*
+}
+void predicat_()#UNARY:
+{}
+{
+  //[not()](predicat()|"("predicat_()")")
+  [not()](predicat()|"("formule_()")") //modification du 29 mars 2016
+}
+

@@ -1,0 +1,97 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+import socket
+import gc
+from socket import *
+from psar_python import *
+from formule import *
+socket = socket(AF_INET, SOCK_STREAM)
+socket.bind(('', 15555))
+
+formules =[]
+#socket.listen(2)
+#client, address = socket.accept()
+#print "{} connected".format( address )
+#etName=["jd","fm","cl"]
+mon_interp_formul
+while True:	
+
+		socket.listen(2)
+		client, address = socket.accept()
+		print "{} connected".format( address )
+#	etiquette = client.recv(4)
+#	etiquette.strip	
+#	print etiquette
+#	if(etiquette == etName[0]):	
+		#print "jardin"
+		#on attend le jardin
+		jardin = client.recv(65535)
+		if jardin != "":
+			mon_jardin=[]
+			resultat=jardin.split(":")  
+	        	for i in resultat:
+	        		j=i.split(",")
+	        		a=int(j[0])
+	        		b=int(j[1])
+	        		fleur=((a,b),j[2],j[3],j[4],j[5])
+	        		mon_jardin.append(fleur)
+			print mon_jardin	
+	    		mon_interp_formul= j_interp_formul(mon_jardin)
+
+#	if(etiquette == etName[1]):
+		#on attend les formules
+		#print "formules"
+			chaineFormule=client.recv(65535)
+			chaineFormule.strip
+			while(chaineFormule != "close"):				 
+		#print "etapes formules"
+				if chaineFormule != "":
+			#chaines = chaineFormule.split(":")
+			#i = 1		
+			#while(i < len(chaines)):
+				#formules.append(create_formule(chaines[i]))
+			#print chaineFormule
+					formule = create_formule(chaineFormule)	
+			#	i+=1
+			#i = 0
+			#print formules
+			#resultat =""
+			#while(i < len(formules)):
+			#	print(i)
+			#	try:	      	
+			#		lrt = mon_interp_formul(formules[i])
+			#		if(lrt==True):
+			#			resultat ="ok"
+			#			client.send("ok")
+			#		else : 
+			#			resultat ="no"
+			#			client.send("nok")
+			#	except ValueError:
+			#		resultat ="ror"
+			#		client.send("ror")				
+			#		pass
+			#	i+=1
+					try:	      	
+						lrt = mon_interp_formul(formule)
+						if(lrt==True):
+							resultat ="ok"
+							client.send("ok")
+						else : 
+							resultat ="no"
+							client.send("no")
+					except ValueError:
+						resultat ="ror"
+						client.send("ro")				
+						pass
+				
+			
+	#else:	
+		#resultat += "formule vide"
+					print resultat
+				chaineFormule=client.recv(65535)
+				chaineFormule.strip
+				
+	#if(etiquette == etName[2]):	
+			client.close() 	     
+socket.close()	

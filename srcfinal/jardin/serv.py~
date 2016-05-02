@@ -1,0 +1,55 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+import socket
+from socket import *
+from psar_python import *
+
+socket = socket(AF_INET, SOCK_STREAM)
+socket.bind(('', 15555))
+
+formules =[]
+while True:	
+	socket.listen(5)
+	client, address = socket.accept()
+	print "{} connected".format( address )
+	jardin = client.recv(65535)
+	if jardin != "":
+		mon_jardin=[]
+		resultat=response.split(":")  
+	        for i in resultat:
+	        	j=i.split(",")
+	        	a=int(j[0])
+	        	b=int(j[1])
+	        	fleur=((a,b),j[2],j[3],j[4],j[5])
+	        	mon_jardin.append(fleur)
+	    	mon_interp_formul= j_interp_formul(mon_jardin)
+
+	chaineFormule=client.recev(65535)
+	chaineFormule.strip
+	
+	if chaineFormule != "":
+		chaines = chaineFormule.split(":")
+		i = 1		
+		while(i < len(chaines)):
+			formules.append(create_formule(chaines[i]))	
+			i+=1
+
+		i = 0	
+		while(i < len(formules)):
+			try:		       	
+				lrt = mon_interp_formul(formules[i])
+				if(lrt==True):
+					resultat+=":true"
+				else : 
+					resultat+=":false"
+			
+			except ValueError:
+				resultat+=":false"
+				pass
+			i+=1
+		print resultat
+		client.send(resultat) 
+		client.close()      
+	       
+socket.close()

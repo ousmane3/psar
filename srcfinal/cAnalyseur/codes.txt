@@ -1,0 +1,101 @@
+fonction valueTree:
+
+		/*	String value ="";		
+		String pereValue = nd.toString();
+		String currentNodeValue ="";
+		int nbfils = nd.jjtGetNumChildren(); //nombre des fils
+		if(pereValue.compareTo("alternative1")==0// elimination de l' arbre
+			||pereValue.compareTo("alternative2")==0
+			||pereValue.compareTo("UNARY")==0
+			
+		  )
+		{				
+				pereValue ="";
+		}
+		
+		if(nbfils ==0)
+			try{
+				return nd.jjtGetValue().toString();
+			}
+			catch(NullPointerException e){}
+		
+		if(nbfils==1)
+			value=  valueTree((SimpleNode)nd.jjtGetChild(0));
+		else
+			for(int i = 0; i < nbfils; i++)//on parcours les fils de gauche à droite
+			{
+				value +="(" + valueTree((SimpleNode)nd.jjtGetChild(i))+")";
+			}
+		
+		if(!pereValue.isEmpty())
+		pereValue +="("+ value+")";
+		else pereValue = value;
+
+		
+
+		return pereValue;*/
+		
+		
+			/*	
+			boolean firstChild = true;
+			for(i =0; i < nbfils; i++)
+			{
+				currentNode = (SimpleNode)nd.jjtGetChild(i);
+				currentNodeValue = currentNode.toString();				
+					if(currentNodeValue.compareTo(pereValue)!=0)
+					{
+						if(i !=nbfils-1)
+						{	
+							if(firstChild)
+							{
+								firstChild = false ;
+								value += pereValue+"("+valueTree(currentNode)+")";
+								
+							}
+							else 
+							{
+								firstChild = true;
+								value +="("+ pereValue+"("+valueTree(currentNode)+")";
+								rightp+=")";
+										
+							}
+						}
+						else 
+						{
+							value += "("+valueTree(currentNode)+")";
+						}
+					}
+
+
+			}
+			value +=rightp;*/
+		
+
+		
+	//	if(nbfils >= 3)// l operateur est tjrs au milieu
+		//{
+			//value += valueTree((SimpleNode)nd.jjtGetChild(1)) ;
+			//for(i = 0; i < nbfils; i+=2 )
+			//{
+			//	value +="("+valueTree((SimpleNode)nd.jjtGetChild(i))+")" ;
+			//	value +=((i+1) < nbfils)?"("+valueTree((SimpleNode)nd.jjtGetChild(i))+")":"";
+			//}
+		//}
+		//else // l operateur commencera tjrs en premier
+		//{
+	/*		for(i = 0; i < nbfils; i++ )
+			{
+				pere =((SimpleNode)nd.jjtGetChild(i));
+				pereValue = (pere.toString().compareTo("UNARY")==0)?"":pereValue;// celui  qui n'est pas Unary est le pere des autres
+				if(!pereValue.isEmpty())break;
+			}
+			value +=pereValue;
+			for(i = 0; i < nbfils; i++ )
+			{
+				currentNode = (SimpleNode)nd.jjtGetChild(i);
+				if(currentNode.toString().compareTo(pereValue)!=0)
+					value +="("+valueTree(currentNode)+")";  
+			}
+			pereValue =(pereValue.isEmpty())?value:pereValue+"("+value+")";
+		*/
+		
